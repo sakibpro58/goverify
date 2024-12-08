@@ -1,19 +1,15 @@
-FROM golang:1.21-alpine
+FROM golang:1.7.4-alpine
 
-# Set the working directory
-WORKDIR /app
+MAINTAINER me@abimaelmartell.com
 
-# Initialize go.mod if it doesn't exist
-RUN if [ ! -f go.mod ]; then go mod init goverifier; fi
+RUN mkdir -p $GOPATH/src/github.com/abimaelmartell/goverify
 
-# Copy the project files into the container
+WORKDIR "$GOPATH/src/github.com/abimaelmartell/goverify"
+
 COPY . .
 
-# Install dependencies and build the Go app, specifying the correct output location
-RUN go mod tidy && go build -o /app/goverifier .
+RUN go get
 
-# Expose the necessary port (update if needed)
+ENTRYPOINT ["/go/bin/goverify"]
+
 EXPOSE 8080
-
-# Set the entry point to the built executable
-ENTRYPOINT ["/app/goverifier"]
